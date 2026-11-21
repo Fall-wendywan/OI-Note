@@ -1,0 +1,61 @@
+在C++中，快速实现十进制转二进制有以下几种常用方法：
+
+1.‌使用标准库bitset‌
+Code
+------
+#include <bitset>
+#include <iostream>
+int main() {
+    int num = 42;
+    std::bitset<32> binary(num); // 32位二进制表示
+    std::cout << binary << std::endl;
+    return 0;
+}
+
+------
+
+这种方法直接调用标准库，代码简洁高效。
+
+2.‌使用位运算‌
+Code
+------
+void printBinary(int num) {
+    for (int i = 31; i >= 0; i--) {
+        std::cout << ((num >> i) & 1);
+    }
+}
+------
+通过移位操作逐位提取二进制位，性能较好。
+
+‌3.递归法‌
+Code
+------
+void decToBin(int n) {
+    if (n > 1) decToBin(n/2);
+    std::cout << n % 2;
+}
+------
+代码简洁但递归调用会有一定性能开销。
+
+4.‌使用ostringstream‌
+Code
+------
+#include <sstream>
+#include <iomanip>
+std::string decToBin(int num) {
+    std::ostringstream oss;
+    oss << std::setbase(2) << num;
+    return oss.str();
+}
+------
+可以方便地获取二进制字符串1。
+
+5.‌C++20的format方法‌
+Code
+------
+#include <format>
+std::string binary = std::format("{:b}", 42);
+------
+最新标准提供的最简洁方式10。
+
+对于性能要求高的场景，推荐使用bitset或位运算方法；若需要灵活性，ostringstream或format方法更合适。

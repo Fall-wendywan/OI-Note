@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)https://note.ms/lhkdbb -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ebeef2">
+    <title>Note.ms</title>
+	
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui, viewport-fit=cover">
+    <meta name="format-detection" content="telephone=no">
+
+    <link href="./猫娘插件_files/abc.css" rel="stylesheet">
+    
+    <link rel="shortcut icon" href="https://note.ms/meta/favicon.png" type="image/png">
+    <link rel="icon" href="https://note.ms/meta/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="https://note.ms/meta/app.png">
+    <link rel="apple-touch-icon-precomposed" href="https://note.ms/meta/app.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="msapplication-TileColor" content="ebeef2">
+    <meta name="msapplication-TileImage" content="meta/app.png">
+    <meta name="theme-color" content="#ebeef2">
+    
+    <meta property="og:title" content="Note.ms">
+    <meta property="og:site_name" content="Note.ms">
+    <meta property="og:description" content="Take notes with simplicity">
+    <meta property="og:image" content="meta/app.png">
+</head>
+<body>
+
+    <div class="stack">
+        <div class="layer">
+            <div class="layer">
+                <div class="layer">
+                <textarea class="content">// ==UserScript==
+// @name         猫娘插件
+// @namespace    http://tampermonkey.net/
+// @version      1.3
+// @description  喵
+// @author       喵
+// @match        *://*/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    function processInput(target, isContentEditable) {
+        let value = isContentEditable ? target.textContent : target.value;
+        let cursorPos = isContentEditable ? getCaretPosition(target) : target.selectionStart;
+
+        if (cursorPos &lt; 1 || value[cursorPos - 1] !== '。') return;
+
+        // 避免重复：前面已经是“喵。”
+        if (cursorPos &gt;= 2 &amp;&amp; value[cursorPos - 2] === '喵') {
+            return;
+        }
+
+        const newValue = value.substring(0, cursorPos - 1) + '喵。' + value.substring(cursorPos);
+
+        if (isContentEditable) {
+            const oldScrollTop = target.scrollTop;
+            target.textContent = newValue;
+            // 光标放在“喵。”之后 → cursorPos + 1
+            setCaretPosition(target, cursorPos + 1);
+            target.scrollTop = oldScrollTop;
+        } else {
+            target.value = newValue;
+            target.setSelectionRange(cursorPos + 1, cursorPos + 1);
+        }
+    }
+
+    function getCaretPosition(element) {
+        const selection = window.getSelection();
+        if (selection.rangeCount === 0) return 0;
+        const range = selection.getRangeAt(0).cloneRange();
+        range.selectNodeContents(element);
+        range.setEnd(selection.getRangeAt(0).endContainer, selection.getRangeAt(0).endOffset);
+        return range.toString().length;
+    }
+
+    function setCaretPosition(element, pos) {
+        // 先获取总文本长度，避免越界
+        const totalLength = element.textContent.length;
+        if (pos &gt; totalLength) pos = totalLength;
+
+        const selection = window.getSelection();
+        const range = document.createRange();
+        let charCount = 0;
+        let found = false;
+
+        function walk(node) {
+            if (found || node.nodeType !== Node.TEXT_NODE) return;
+            const nodeLen = node.textContent.length;
+            if (charCount + nodeLen &gt;= pos) {
+                const offset = pos - charCount;
+                range.setStart(node, offset);
+                range.collapse(true);
+                found = true;
+            } else {
+                charCount += nodeLen;
+            }
+        }
+
+        // 使用 TreeWalker 更可靠地遍历文本节点
+        const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+        let node;
+        while (!found &amp;&amp; (node = walker.nextNode())) {
+            walk(node);
+        }
+
+        if (!found) {
+            // 放在末尾
+            range.selectNodeContents(element);
+            range.collapse(false);
+        }
+
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+
+    document.addEventListener('input', function(e) {
+        const t = e.target;
+        const isEditable = t.isContentEditable;
+        const isTextInput = (t.tagName === 'INPUT' &amp;&amp; t.type === 'text') || t.tagName === 'TEXTAREA';
+
+        if (isEditable || isTextInput) {
+            setTimeout(() =&gt; processInput(t, isEditable), 0);
+        }
+    }, true);
+
+    document.addEventListener('compositionend', function(e) {
+        if (e.target.isContentEditable) {
+            setTimeout(() =&gt; processInput(e.target, true), 0);
+        }
+    }, true);
+})();</textarea>
+                </div>
+            </div>
+        </div>
+        <div class="flag">
+            <a href="https://note.ms/">Note.ms</a>/lhkdbb        </div>
+    </div>
+    <pre class="print">// ==UserScript==
+// @name         猫娘插件
+// @namespace    http://tampermonkey.net/
+// @version      1.3
+// @description  喵
+// @author       bobo
+// @match        *://*/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    function processInput(target, isContentEditable) {
+        let value = isContentEditable ? target.textContent : target.value;
+        let cursorPos = isContentEditable ? getCaretPosition(target) : target.selectionStart;
+
+        if (cursorPos &lt; 1 || value[cursorPos - 1] !== '。') return;
+
+        // 避免重复：前面已经是“喵。”
+        if (cursorPos &gt;= 2 &amp;&amp; value[cursorPos - 2] === '喵') {
+            return;
+        }
+
+        const newValue = value.substring(0, cursorPos - 1) + '喵。' + value.substring(cursorPos);
+
+        if (isContentEditable) {
+            const oldScrollTop = target.scrollTop;
+            target.textContent = newValue;
+            // 光标放在“喵。”之后 → cursorPos + 1
+            setCaretPosition(target, cursorPos + 1);
+            target.scrollTop = oldScrollTop;
+        } else {
+            target.value = newValue;
+            target.setSelectionRange(cursorPos + 1, cursorPos + 1);
+        }
+    }
+
+    function getCaretPosition(element) {
+        const selection = window.getSelection();
+        if (selection.rangeCount === 0) return 0;
+        const range = selection.getRangeAt(0).cloneRange();
+        range.selectNodeContents(element);
+        range.setEnd(selection.getRangeAt(0).endContainer, selection.getRangeAt(0).endOffset);
+        return range.toString().length;
+    }
+
+    function setCaretPosition(element, pos) {
+        // 先获取总文本长度，避免越界
+        const totalLength = element.textContent.length;
+        if (pos &gt; totalLength) pos = totalLength;
+
+        const selection = window.getSelection();
+        const range = document.createRange();
+        let charCount = 0;
+        let found = false;
+
+        function walk(node) {
+            if (found || node.nodeType !== Node.TEXT_NODE) return;
+            const nodeLen = node.textContent.length;
+            if (charCount + nodeLen &gt;= pos) {
+                const offset = pos - charCount;
+                range.setStart(node, offset);
+                range.collapse(true);
+                found = true;
+            } else {
+                charCount += nodeLen;
+            }
+        }
+
+        // 使用 TreeWalker 更可靠地遍历文本节点
+        const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+        let node;
+        while (!found &amp;&amp; (node = walker.nextNode())) {
+            walk(node);
+        }
+
+        if (!found) {
+            // 放在末尾
+            range.selectNodeContents(element);
+            range.collapse(false);
+        }
+
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+
+    document.addEventListener('input', function(e) {
+        const t = e.target;
+        const isEditable = t.isContentEditable;
+        const isTextInput = (t.tagName === 'INPUT' &amp;&amp; t.type === 'text') || t.tagName === 'TEXTAREA';
+
+        if (isEditable || isTextInput) {
+            setTimeout(() =&gt; processInput(t, isEditable), 0);
+        }
+    }, true);
+
+    document.addEventListener('compositionend', function(e) {
+        if (e.target.isContentEditable) {
+            setTimeout(() =&gt; processInput(e.target, true), 0);
+        }
+    }, true);
+})();</pre>
+    <script src="./猫娘插件_files/abc.js.下载"></script>
+
+<script defer="" src="./猫娘插件_files/beacon.min.js.下载" data-cf-beacon="{&quot;token&quot;: &quot;b7f77d84879a4c82972bd5bf4fd8de1d&quot;}"></script>
+
+
+</body></html>

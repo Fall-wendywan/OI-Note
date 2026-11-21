@@ -1,0 +1,2 @@
+__builtin_popcount( x )
+计算x二进制下有多少个1

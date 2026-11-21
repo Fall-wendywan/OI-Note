@@ -1,0 +1,135 @@
+int fac[MAXN];
+vector<int> pri;//存储质数
+void sieve(int n) {
+    // for( int i = 0; i <= n; i ++ ) fac[i] = 0;
+    for( int i = 2; i <= n; i ++ ) {
+        if( fac[i] == 0 ) { // i是质数
+            fac[i] = i;
+            pri.push_back(i);
+        }
+        //标记合数
+        for( int j = 0; j < pri.size(); j++ ){
+            int p = pri[j];
+            if( p > n / i ) break; // 防止p*i溢出n
+            fac[p * i] = p; // p是p*i的最小质因数
+            if( i % p == 0 ) break; // 关键：p已是i的质因数，终止循环
+        }
+    }
+}
+
+---
+
+int fac[MAXN];
+vector<int> pri;
+
+void sieve( int N ){
+    for( int i = 0; i <= N; i ++ ) fac[i] = 0;
+    pri.clear();
+    for( int i = 2; i <= N; i ++ ){
+        if( !fac[i] ){
+            fac[i] = i;
+            pri.push_back( i );
+        }
+        for( int j = 0; j < pri.size(); j ++ ){
+            int p = pri[j];
+            if( p > N / i ) break;
+            fac[p * i] = p;
+            if( i % p == 0 ) break;
+        }
+    }
+}   
+
+---
+
+int fac[MAXN];        // fac[i]记录i的最小质因子
+vector<int> pri;      // 存储所有素数
+
+// 线性筛法（保持不变）
+void sieve(int n) {
+    for(int i = 0; i <= n; i++) fac[i] = 0;
+    pri.clear();
+    
+    for(int i = 2; i <= n; i++) {
+        if(fac[i] == 0) {
+            fac[i] = i;
+            pri.push_back(i);
+        }
+        for(int j = 0; j < pri.size(); j++) {
+            int p = pri[j];
+            if(p > n / i) break;
+            fac[p * i] = p;
+            if(i % p == 0) break;
+        }
+    }
+}
+
+// 新增：质因数分解函数
+map<int, int> factorize(int x) {
+    map<int, int> factors;  // 存储质因数及其指数
+    
+    if(x < 2) return factors;  // 小于2无质因数
+    
+    // 不断除以最小质因子
+    while(x > 1) {
+        int p = fac[x];     // 当前最小质因子
+        int count = 0;
+        
+        // 统计该质因子的指数
+        while(fac[x] == p) {
+            count++;
+            x /= p;
+        }
+        factors[p] = count; // 记录质因数及其指数
+    }
+    return factors;
+}
+
+// 辅助函数：格式化输出质因数
+void print_factors(int x) {
+    auto factors = factorize(x);
+    cout << x << " = ";
+    if(factors.empty()) {
+        cout << "1";
+    } else {
+        bool first = true;
+        for(auto &[p, exp] : factors) {
+            if(!first) cout << " * ";
+            first = false;
+            cout << p;
+            if(exp > 1) cout << "^" << exp;
+        }
+    }
+    cout << endl;
+}
+
+---
+
+vector<int> pri;
+set<int> facc;
+void sieve( int N ){
+    for( int i = 2; i <= N; i ++ ){
+        if( !fac[i] ){
+            // cerr << i << endl;
+            fac[i] = i;
+            pri.push_back( i );
+        }
+        for( int j = 0; j < pri.size(); j ++ ){
+            int p = pri[j];
+            if( p > N / i ) break;
+            fac[p * i] = p;
+            if( i % p == 0 ) break;
+        }
+    }
+}
+
+void solve( int x ){
+    if( x <= 1 ) return;
+    for( int p : pri ){
+        if( p * p > x ) break;
+        if( x % p == 0 ){
+            facc.insert( p );
+            while( x % p == 0 ) x /= p;
+        }
+    }
+    if( x > 1 ) facc.insert( x );
+}
